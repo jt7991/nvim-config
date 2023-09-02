@@ -668,6 +668,7 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.api.nvim_create_user_command("TestEase", require("testTemplate").test_ease, {})
 vim.keymap.set("n", "<leader>tt", ":TestEase<CR>", { desc = "Jump to test file or tested file" })
 
-vim.api.nvim_create_user_command("QuickLint", require("quickLint").runQuickLint, {})
+vim.api.nvim_create_user_command("QfLint", require("quickLint").runQuickLint, {})
+vim.api.nvim_create_user_command("QfComments", require("qfComments").add_pr_comments_to_qf, {})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
