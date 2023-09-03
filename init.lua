@@ -43,13 +43,9 @@ P.S. You can delete this when you're done too. It's your config now :)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- disable netrw at the very start of your init.lua
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
-local group = vim.api.nvim_create_augroup("lsp_format_on_save", { clear = false })
-local event = "BufWritePre" -- or "BufWritePost"
-local async = event == "BufWritePost"
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -77,15 +73,20 @@ require("lazy").setup({
   -- Git related plugins
   "tpope/vim-fugitive",
   "tpope/vim-rhubarb",
-  "nvim-tree/nvim-tree.lua",
   -- Detect tabstop and shiftwidth automatically
+  "tpope/vim-surround",
   "tpope/vim-sleuth",
   "github/copilot.vim",
+  "ggandor/leap.nvim",
   {
     "jose-elias-alvarez/null-ls.nvim",
     config = function()
       require("null-ls").setup({
+        debug = true,
         on_attach = function(client, bufnr)
+          local group = vim.api.nvim_create_augroup("lsp_format_on_save", { clear = false })
+          local event = "BufWritePre" -- or "BufWritePost"
+          local async = event == "BufWritePost"
           if client.supports_method("textDocument/formatting") then
             vim.keymap.set("n", "<Leader>f", function()
               vim.lsp.buf.format({ bufnr = vim.api.nvim_get_current_buf() })
@@ -97,26 +98,18 @@ require("lazy").setup({
               buffer = bufnr,
               group = group,
               callback = function()
-                vim.lsp.buf.format({ bufnr = bufnr, async = async })
+                vim.lsp.buf.format({
+                  bufnr = bufnr,
+                  async = async,
+                })
               end,
               desc = "[lsp] format on save",
             })
           end
-
-          if client.supports_method("textDocument/rangeFormatting") then
-            vim.keymap.set("x", "<Leader>f", function()
-              vim.lsp.buf.format({ bufnr = vim.api.nvim_get_current_buf() })
-            end, { buffer = bufnr, desc = "[lsp] format" })
-          end
         end,
         sources = {
-          require("null-ls").builtins.formatting.prettierd.with({
-            extra_args = { "--config", "/Users/jacobtraunero/ophelia-web/shared/prettier-config/index.js" },
-          }),
+          require("null-ls").builtins.formatting.prettier.with({ extra_args = { "--no-editorconfig" } }),
           require("null-ls").builtins.diagnostics.write_good,
-          require("null-ls").builtins.code_actions.gitsigns,
-          require("null-ls").builtins.code_actions.eslint_d,
-          require("null-ls").builtins.formatting.eslint_d,
           require("null-ls").builtins.formatting.stylua,
         },
       })
@@ -258,12 +251,26 @@ require("lazy").setup({
       },
     },
     {
+      "nvim-telescope/telescope-file-browser.nvim",
+      dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" },
+    },
+    {
       -- Highlight, edit, and navigate code
       "nvim-treesitter/nvim-treesitter",
       dependencies = {
         "nvim-treesitter/nvim-treesitter-textobjects",
       },
       build = ":TSUpdate",
+    },
+    {
+      "nvimdev/lspsaga.nvim",
+      config = function()
+        require("lspsaga").setup({})
+      end,
+      dependencies = {
+        "nvim-treesitter/nvim-treesitter", -- optional
+        "nvim-tree/nvim-web-devicons", -- optional
+      },
     },
 
     -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
@@ -281,7 +288,7 @@ require("lazy").setup({
   },
   {},
 })
-
+require("leap").add_default_mappings()
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
@@ -350,6 +357,11 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
 require("telescope").setup({
+  extensions = {
+    file_browser = {
+      hijack_netrw = true,
+    },
+  },
   defaults = {
     mappings = {
       i = {
@@ -379,8 +391,23 @@ vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, { des
 vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp" })
 vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { desc = "[F]ind current [W]ord" })
 vim.keymap.set("n", "<leader>fg", require("telescope.builtin").live_grep, { desc = "[F]ind by [G]rep" })
+vim.keymap.set("n", "<leader>fm", function()
+  require("telescope.builtin").live_grep({ additional_args = { "-U" } })
+end, { desc = "[F]ind by [M]ultiline grep" })
 vim.keymap.set("n", "<leader>fd", require("telescope.builtin").diagnostics, { desc = "[F]ind [D]iagnostics" })
-vim.api.nvim_set_keymap("n", "<space>fb", ":Telescope file_browser<CR>", { noremap = true })
+vim.keymap.set(
+  "n",
+  "<leader>fs",
+  require("telescope.builtin").lsp_dynamic_workspace_symbols,
+  { desc = "[F]ind [S]ymbols" }
+)
+require("telescope").load_extension("file_browser")
+vim.api.nvim_set_keymap(
+  "n",
+  "<space>fb",
+  ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
+  { noremap = true }
+)
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
 require("nvim-treesitter.configs").setup({
@@ -470,8 +497,25 @@ local on_attach = function(_, bufnr)
     vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
   end
 
+  local organize_imports = function()
+    local params = {
+      command = "_typescript.organizeImports",
+      arguments = { vim.api.nvim_buf_get_name(0) },
+      title = "",
+    }
+    vim.lsp.buf.execute_command(params)
+  end
+
+  vim.api.nvim_create_user_command("OrganizeImports", organize_imports, {})
+  vim.api.nvim_create_autocmd("BufWritePre", {
+    buffer = bufnr,
+    group = vim.api.nvim_create_augroup("lsp_organize_imports", { clear = false }),
+    callback = function()
+      organize_imports()
+    end,
+    desc = "[lsp] organize_imports",
+  })
   nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
-  nmap("<leader>ca", vim.lsp.buf.code_action, "[C]ode [A]ction")
 
   nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
   nmap("gr", require("telescope.builtin").lsp_references, "[G]oto [R]eferences")
@@ -480,8 +524,6 @@ local on_attach = function(_, bufnr)
   nmap("<leader>ds", require("telescope.builtin").lsp_document_symbols, "[D]ocument [S]ymbols")
   nmap("<leader>ws", require("telescope.builtin").lsp_dynamic_workspace_symbols, "[W]orkspace [S]ymbols")
 
-  -- See `:help K` for why this keymap
-  nmap("K", vim.lsp.buf.hover, "Hover Documentation")
   nmap("<C-k>", vim.lsp.buf.signature_help, "Signature Documentation")
 
   -- Lesser used LSP functionality
@@ -491,11 +533,6 @@ local on_attach = function(_, bufnr)
   nmap("<leader>wl", function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, "[W]orkspace [L]ist Folders")
-
-  -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, "Format", function(_)
-    vim.lsp.buf.format()
-  end, { desc = "Format current buffer with LSP" })
 end
 
 -- Enable the following language servers
@@ -511,7 +548,9 @@ local servers = {
   -- gopls = {},
   -- pyright = {},
   -- rust_analyzer = {},
-  -- tsserver = {},
+  tsserver = {
+    commands = {},
+  },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
   lua_ls = {
@@ -543,6 +582,7 @@ mason_lspconfig.setup_handlers({
       on_attach = on_attach,
       settings = servers[server_name],
       filetypes = (servers[server_name] or {}).filetypes,
+      commands = (servers[server_name] or {}).commands,
     })
   end,
 })
@@ -601,16 +641,6 @@ vim.g.copilot_assume_mapped = true
 
 vim.api.nvim_set_keymap("i", "<C-l>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
-require("nvim-tree").setup({
-  sort_by = "case_sensitive",
-  filters = {
-    dotfiles = true,
-  },
-  respect_buf_cwd = true,
-})
-
-vim.keymap.set("n", "<leader>tf", ":NvimTreeFocus<CR>", { silent = true })
-vim.keymap.set("n", "<leader>tt", ":NvimTreeToggle<CR>", { silent = true })
 local mark = require("harpoon.mark")
 local ui = require("harpoon.ui")
 
@@ -630,9 +660,15 @@ end)
 vim.keymap.set("n", "<leader>h4", function()
   ui.nav_file(4)
 end)
-
+vim.keymap.set("n", "K", "<cmd>Lspsaga hover_doc<CR>")
+vim.keymap.set("n", "<leader>ca", ":Lspsaga code_action<CR>")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
+vim.api.nvim_create_user_command("TestEase", require("testTemplate").test_ease, {})
+vim.keymap.set("n", "<leader>tt", ":TestEase<CR>", { desc = "Jump to test file or tested file" })
+
+vim.api.nvim_create_user_command("QfLint", require("quickLint").runQuickLint, {})
+vim.api.nvim_create_user_command("QfComments", require("qfComments").add_pr_comments_to_qf, {})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
