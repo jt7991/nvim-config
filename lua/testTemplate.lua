@@ -9,9 +9,12 @@ local function generate_test_file(file_path)
 
   local test_file_exists = vim.fn.filereadable(test_filepath) == 1
   if not test_file_exists then
+    -- create folder if it doesn't exists
+    local test_folder = test_filepath:gsub("/[^/]+$", "")
+    vim.fn.mkdir(test_folder, "p")
     -- Write the Jest test template to the test buffer
     vim.api.nvim_buf_set_lines(test_buffer, 0, -1, false, {
-      "describe('" .. current_filename .. "', () => {",
+      "describe('" .. test_filename .. "', () => {",
       "    it('should have some test cases', () => {",
       "        // Your test code here",
       "    });",
