@@ -42,10 +42,9 @@ P.S. You can delete this when you're done too. It's your config now :)
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-
+vim.g.tabstop = 2
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-vim.env.OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
@@ -252,7 +251,12 @@ require("lazy").setup({
 				require("octo").setup()
 			end,
 		},
-
+		{
+			"goolord/alpha-nvim",
+			config = function()
+				require("alpha").setup(require("alpha.themes.dashboard").config)
+			end,
+		},
 		-- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
 		--       These are some example plugins that I've included in the kickstart repository.
 		--       Uncomment any of the lines below to enable them.
@@ -266,6 +270,7 @@ require("lazy").setup({
 		--
 		--    For additional information see: https://github.com/folke/lazy.nvim#-structuring-your-plugins
 	},
+
 	{},
 })
 require("leap").add_default_mappings()
@@ -420,6 +425,8 @@ require("nvim-treesitter.configs").setup({
 				["if"] = "@function.inner",
 				["ac"] = "@class.outer",
 				["ic"] = "@class.inner",
+				["i="] = "@assignment.inner",
+				["a="] = "@assignment.outer",
 			},
 		},
 		move = {
@@ -477,24 +484,6 @@ local on_attach = function(_, bufnr)
 		vim.keymap.set("n", keys, func, { buffer = bufnr, desc = desc })
 	end
 
-	local organize_imports = function()
-		local params = {
-			command = "_typescript.organizeImports",
-			arguments = { vim.api.nvim_buf_get_name(0) },
-			title = "",
-		}
-		vim.lsp.buf.execute_command(params)
-	end
-
-	vim.api.nvim_create_user_command("OrganizeImports", organize_imports, {})
-	vim.api.nvim_create_autocmd("BufWritePre", {
-		buffer = bufnr,
-		group = vim.api.nvim_create_augroup("lsp_organize_imports", { clear = false }),
-		callback = function()
-			organize_imports()
-		end,
-		desc = "[lsp] organize_imports",
-	})
 	nmap("<leader>rn", vim.lsp.buf.rename, "[R]e[n]ame")
 
 	nmap("gd", vim.lsp.buf.definition, "[G]oto [D]efinition")
@@ -648,8 +637,10 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.api.nvim_create_user_command("TestEase", require("testTemplate").test_ease, {})
 vim.keymap.set("n", "<leader>tt", ":TestEase<CR>", { desc = "Jump to test file or tested file" })
 
-vim.api.nvim_create_user_command("QfLint", require("quickLint").runQuickLint, {})
+vim.api.nvim_create_user_command("QfLint", require("quickLint").addLintOutputToQf, {})
+vim.api.nvim_create_user_command("QfTypes", require("quickLint").addTypeCheckOutputToQuickfixList, {})
 vim.api.nvim_create_user_command("QfComments", require("qfComments").add_pr_comments_to_qf, {})
+vim.api.nvim_create_user_command("QfAll", require("quickLint").addTypescriptDiagnosticsToQuickfix, {})
 
 require("onSave").setup()
 -- The line beneath this is called `modeline`. See `:help modeline`
