@@ -2,7 +2,7 @@ local get_review_threads_for_current_pr = function(pr_info_table)
 	local graphQLQuery = [[{
 	repository(owner: "]] .. pr_info_table.owner_name .. [[", name: "]] .. pr_info_table.repo_name .. [[") {
 	    pullRequest(number:]] .. pr_info_table.pr_number .. [[) {
-	        reviewThreads(first: 10) {
+	        reviewThreads(first: 100) {
 		    edges {
 		      node {
                         id
@@ -33,7 +33,7 @@ local get_current_pr_repo_and_owner = function()
 	local pr_table = vim.fn.json_decode(current_pr[1])
 	local pr_number = pr_table.number
 	local current_pr_repo_and_owner =
-	    vim.fn.json_decode(vim.fn.systemlist("gh pr view --json headRepository,headRepositoryOwner")[1])
+		vim.fn.json_decode(vim.fn.systemlist("gh pr view --json headRepository,headRepositoryOwner")[1])
 	if current_pr_repo_and_owner == nil then
 		print("No PR found")
 		return
