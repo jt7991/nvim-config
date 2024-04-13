@@ -7,10 +7,37 @@
 --  If you want to override the default filetypes that your language server will attach to you can
 --  define the property 'filetypes' to the map in question.
 local servers = {
-  -- clangd = {},
-  -- gopls = {},
-  -- pyright = {},
-  -- rust_analyzer = {},
+  clangd = {},
+  gopls = {
+    filetypes = { "go", "gomod" },
+  },
+  html = {
+    filetypes = { "html", "templ" },
+  },
+  htmx = {
+    filetypes = { "html", "templ" },
+  },
+  tailwindcss = {
+    filetypes = {
+      "html",
+      "htmx",
+      "css",
+      "scss",
+      "javascript",
+      "typescript",
+      "javascriptreact",
+      "typescriptreact",
+      "svelte",
+      "templ",
+    },
+    init_options = {
+      userLanguages = {
+        templ = "html",
+      },
+    },
+  },
+  pyright = {},
+  rust_analyzer = {},
   tsserver = {
     commands = {},
   },
@@ -18,7 +45,12 @@ local servers = {
 
   lua_ls = {
     Lua = {
+      library = {
+        "${3rd}/luv/library",
+        unpack(vim.api.nvim_get_runtime_file("", true)),
+      },
       workspace = { checkThirdParty = false },
+      diagnostics = { globals = { "vim", "use", "packer_plugins" } },
       telemetry = { enable = false },
     },
   },

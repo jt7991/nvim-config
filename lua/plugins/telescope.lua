@@ -23,7 +23,7 @@ return {
     require("telescope").setup({
       extensions = {
         file_browser = {
-          hijack_netrw = true,
+          hijack_netrw = false,
         },
         ["ui-select"] = {
           require("telescope.themes").get_dropdown({}),
@@ -52,7 +52,6 @@ return {
         previewer = false,
       }))
     end, { desc = "[/] Fuzzily search in current buffer" })
-    vim.keymap.set("n", "<leader>gf", require("telescope.builtin").git_files, { desc = "Search [G]it [F]iles" })
     vim.keymap.set("n", "<leader>ff", require("telescope.builtin").find_files, { desc = "[F]ind [F]iles" })
     vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp" })
     vim.keymap.set("n", "<leader>fw", require("telescope.builtin").grep_string, { desc = "[F]ind current [W]ord" })
@@ -62,21 +61,28 @@ return {
       require("telescope").extensions.live_grep_args.live_grep_args,
       { desc = "[F]ind by [G]rep" }
     )
+
     vim.keymap.set("n", "<leader>fm", function()
       require("telescope.builtin").live_grep({ additional_args = { "-U" } })
     end, { desc = "[F]ind by [M]ultiline grep" })
+
     vim.keymap.set("n", "<leader>fd", require("telescope.builtin").diagnostics, { desc = "[F]ind [D]iagnostics" })
+
     vim.keymap.set(
       "n",
       "<leader>fs",
       require("telescope.builtin").lsp_dynamic_workspace_symbols,
       { desc = "[F]ind [S]ymbols" }
     )
+
     vim.api.nvim_set_keymap(
       "n",
       "<space>fb",
       ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
       { noremap = true }
     )
+
+    vim.keymap.set("n", "<leader>gb", require("telescope.builtin").git_branches, { desc = "[G]it [B]ranches" })
+    vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "[G]it [S]tatus" })
   end,
 }

@@ -24,22 +24,20 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
   "tpope/vim-fugitive",
   "tpope/vim-rhubarb",
-  -- Detect tabstop and shiftwidth automatically
+  "tpope/vim-abolish",
   "tpope/vim-surround",
+  -- Detect tabstop and shiftwidth automatically
   "tpope/vim-sleuth",
   "github/copilot.vim",
   "sbdchd/neoformat",
   "mbbill/undotree",
   -- Useful plugin to show you pending keybinds.
   { "folke/which-key.nvim", opts = {} },
+  { "folke/neodev.nvim", opts = {} },
   {
     -- Add indentation guides even on blank lines
     "lukas-reineke/indent-blankline.nvim",
-    -- See `:help indent_blankline.txt`
-    opts = {
-      char = "┊",
-      show_trailing_blankline_indent = false,
-    },
+    main = "ibl",
   },
 
   { "numToStr/Comment.nvim", opts = {} },
@@ -119,9 +117,6 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnos
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
--- Setup neovim lua configuration
-require("neodev").setup()
-
 -- [[ Configure nvim-cmp ]]
 -- See `:help cmp`
 
@@ -138,11 +133,11 @@ vim.keymap.set("n", "U", "<cmd>UndotreeToggle<CR>")
 vim.api.nvim_create_user_command("TestEase", require("testTemplate").test_ease, {})
 vim.keymap.set("n", "<leader>tt", ":TestEase<CR>", { desc = "Jump to test file or tested file" })
 
-vim.keymap.set("n", "<leader>fe", ":NvimTreeToggle<CR>", { desc = "Toggle file explorer" })
 vim.api.nvim_create_user_command("QfLint", require("quickLint").addLintOutputToQf, {})
 vim.api.nvim_create_user_command("QfTypes", require("quickLint").addTypeCheckOutputToQuickfixList, {})
 vim.api.nvim_create_user_command("QfComments", require("qfComments").add_pr_comments_to_qf, {})
 vim.api.nvim_create_user_command("QfAll", require("quickLint").addTypescriptDiagnosticsToQuickfix, {})
+vim.api.nvim_create_user_command("TsToZod", require("tsToZod").convert_selected_to_zod, { range = true })
 
 vim.api.nvim_create_user_command("PrCreate", ":!gh pr create --web", {})
 vim.api.nvim_create_user_command("Env", function(opts)
@@ -158,6 +153,13 @@ end, {
   end,
 })
 
+vim.filetype.add({
+  extension = {
+    templ = "templ",
+  },
+})
+
+vim.g.neoformat_basic_format_retab = 1
 require("onSave").setup()
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
