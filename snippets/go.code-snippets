@@ -1,0 +1,8 @@
+{
+  "If Error": {
+    "prefix": ["if error", "ifer", "iferr", "if err"],
+    "body": ["if err != nil {", "\t$1", "}"],
+    "description": "Error handling",
+    "scope": "go"
+  }
+}

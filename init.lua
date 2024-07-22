@@ -4,6 +4,8 @@ vim.g.tabstop = 2
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+vim.opt.spelllang = "en_us"
+vim.opt.spell = true
 -- Install package manager
 --    https://github.com/folke/lazy.nvim
 --    `:help lazy.nvim.txt` for more info
@@ -130,8 +132,6 @@ vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 vim.keymap.set("n", "U", "<cmd>UndotreeToggle<CR>")
-vim.api.nvim_create_user_command("TestEase", require("testTemplate").test_ease, {})
-vim.keymap.set("n", "<leader>tt", ":TestEase<CR>", { desc = "Jump to test file or tested file" })
 
 vim.api.nvim_create_user_command("QfLint", require("quickLint").addLintOutputToQf, {})
 vim.api.nvim_create_user_command("QfTypes", require("quickLint").addTypeCheckOutputToQuickfixList, {})
@@ -161,5 +161,12 @@ vim.filetype.add({
 
 vim.g.neoformat_basic_format_retab = 1
 require("onSave").setup()
+
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.code-snippets",
+  callback = function()
+    vim.bo.filetype = "json"
+  end,
+})
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

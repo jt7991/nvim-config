@@ -20,6 +20,10 @@ return {
     local cmp = require("cmp")
     local luasnip = require("luasnip")
     require("luasnip.loaders.from_vscode").lazy_load()
+    require("luasnip.loaders.from_vscode").load_standalone({ path = "~/.config/nvim/snippets/go.code-snippets" })
+    require("luasnip.loaders.from_vscode").load_standalone({
+      path = "~/ophelia-web/.vscode/luna-snippets.code-snippets",
+    })
     luasnip.config.setup({})
 
     cmp.setup({

@@ -30,8 +30,7 @@ local function neoformatSetup()
   vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = { "*.ts", "*.tsx" },
     callback = function()
-      organize_imports()
-      vim.cmd("Neoformat")
+      -- organize_imports()
     end,
   })
 end

@@ -11,12 +11,40 @@ return {
     require("neotest").setup({
       adapters = {
         require("neotest-jest")({
-          jestConfigFile = "jest.luna.unit.config.ts",
+          jestConfigFile = function(file)
+            if string.match(file, "%.ign%.test%.ts$") then
+              return "jest.luna.integration.config.ts"
+            end
+
+            if string.match(file, "%.unit%.test%.ts$") then
+              return "jest.luna.unit.config.ts"
+            end
+            error("Not a valid test file")
+          end,
         }),
       },
+      cwd = function(file)
+        if string.find(file, "server/functions") then
+          return string.match(file, "(.-/[^/]+/server/functions)")
+        end
+      end,
     })
   end,
-  vim.keymap.set("n", "<leader>T", function()
+  vim.keymap.set("n", "<leader>tt", function()
     require("neotest").run.run(vim.fn.expand("%"))
-  end),
+  end, { desc = "Run test file" }),
+
+  vim.keymap.set("n", "<leader>tr", function()
+    require("neotest").run.run()
+  end, { desc = "Run Nearest" }),
+
+  vim.keymap.set("n", "<leader>to", function()
+    require("neotest").output_panel.toggle()
+  end, { desc = "Toggle output panel" }),
+
+  vim.keymap.set("n", "<leader>tw", function()
+    local jestCommand = require("neotest-jest").jestCommand
+    print(jestCommand)
+    require("neotest").run.run()
+  end, { desc = "Run test file in watch mode" }),
 }
