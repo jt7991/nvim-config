@@ -43,8 +43,6 @@ return {
   end, { desc = "Toggle output panel" }),
 
   vim.keymap.set("n", "<leader>tw", function()
-    local jestCommand = require("neotest-jest").jestCommand
-    print(jestCommand)
     require("neotest").run.run()
   end, { desc = "Run test file in watch mode" }),
 }

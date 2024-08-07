@@ -28,6 +28,7 @@ require("lazy").setup({
   "tpope/vim-rhubarb",
   "tpope/vim-abolish",
   "tpope/vim-surround",
+  "tpope/vim-repeat",
   -- Detect tabstop and shiftwidth automatically
   "tpope/vim-sleuth",
   "github/copilot.vim",
