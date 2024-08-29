@@ -31,12 +31,12 @@ require("lazy").setup({
   "tpope/vim-repeat",
   -- Detect tabstop and shiftwidth automatically
   "tpope/vim-sleuth",
-  "github/copilot.vim",
+  -- "github/copilot.vim",
   "sbdchd/neoformat",
   "mbbill/undotree",
   -- Useful plugin to show you pending keybinds.
   { "folke/which-key.nvim", opts = {} },
-  { "folke/neodev.nvim", opts = {} },
+  { "folke/neodev.nvim",    opts = {} },
   {
     -- Add indentation guides even on blank lines
     "lukas-reineke/indent-blankline.nvim",
@@ -127,7 +127,7 @@ vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagn
 vim.g.copilot_no_tab_map = true
 vim.g.copilot_assume_mapped = true
 
-vim.api.nvim_set_keymap("i", "<C-l>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
+-- vim.api.nvim_set_keymap("i", "<C-l>", 'copilot#Accept("<CR>")', { silent = true, expr = true })
 
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
 vim.keymap.set("n", "<C-u>", "<C-u>zz")
@@ -161,7 +161,6 @@ vim.filetype.add({
 })
 
 vim.g.neoformat_basic_format_retab = 1
-require("onSave").setup()
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = "*.code-snippets",

@@ -25,9 +25,9 @@ return { -- Autoformat
       lua = { "stylua" },
       go = { "gofmt", "goimports" },
       templ = { "templ_fmt" },
-      typescript = { "prettier" },
-      javascript = { "prettier" },
-      typescriptreact = { "prettier" },
+      typescript = { "prettier", "eslint_d" },
+      javascript = { "prettier", "eslint_d" },
+      typescriptreact = { "prettier", "eslint_d" },
       json = { "prettier" },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
