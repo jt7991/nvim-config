@@ -14,7 +14,7 @@ return { -- Autoformat
     format_on_save = function(bufnr)
       local jsFiletypes = { "javascript", "typescript", "typescriptreact" }
       if vim.tbl_contains(jsFiletypes, vim.api.nvim_buf_get_option(bufnr, "filetype")) then
-        organize_imports()
+        -- organize_imports()
       end
       return {
         timeout_ms = 500,

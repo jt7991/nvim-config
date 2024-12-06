@@ -1,11 +1,8 @@
 local projects = {
-	{ name = "ophelia-emr", path = "~/ophelia-web/client/emr" },
-	{ name = "functions", path = "~/ophelia-web/server/functions" },
-	{ name = "@shared/utils", path = "~/ophelia-web/shared/utils" },
-	{ name = "@shared/types", path = "~/ophelia-web/shared/types" },
-	{ name = "@shared/components", path = "~/ophelia-web/shared/components" },
-	{ name = "ophelia-patient", path = "~/ophelia-web/client/patient" },
-	-- { name = "data", path = "~/ophelia-web/functions/data" },
+	{ name = "orbit",           path = "~/finni/packages/fotivity" },
+	{ name = "backend",         path = "~/finni/packages/backend" },
+	{ name = "mission-control", path = "~/finni/packages/mission-control" },
+	{ name = "den",             path = "~/finni/packages/den" },
 }
 
 local function getEslintEntriesForProject(project)
@@ -35,21 +32,21 @@ local function getEslintEntriesForProject(project)
 			print("Finished lint for " .. project.name)
 		end,
 	})
-  return job_id
+	return job_id
 end
 
 local function getAllEslintErrors()
-  local jobs = {}
+	local jobs = {}
 	for _, project in ipairs(projects) do
 		local job_id = getEslintEntriesForProject(project)
-    table.insert(jobs, job_id)
-  end
-  return jobs
+		table.insert(jobs, job_id)
+	end
+	return jobs
 end
 
 local function addLintOutputToQf()
 	local jobs = getAllEslintErrors()
-  vim.fn.jobwait(jobs, -1)
+	vim.fn.jobwait(jobs, -1)
 	vim.api.nvim_exec("copen", true)
 end
 
@@ -80,31 +77,31 @@ local function addTypeCheckOutputForProject(project)
 			print("Finished typecheck for " .. project.name)
 		end,
 	})
-  return job_id
+	return job_id
 end
 
 local function getAllTypeCheckErrors()
-  local jobs = {}
+	local jobs = {}
 	for _, project in ipairs(projects) do
 		local job_id = addTypeCheckOutputForProject(project)
-    table.insert(jobs, job_id)
+		table.insert(jobs, job_id)
 	end
-  return jobs
+	return jobs
 end
 
 local function addTypeCheckOutputToQuickfixList()
 	local jobs = getAllTypeCheckErrors()
 
-  vim.fn.jobwait(jobs, -1)
-  -- open quickfix window once the above async jobs are done
+	vim.fn.jobwait(jobs, -1)
+	-- open quickfix window once the above async jobs are done
 	vim.api.nvim_exec("copen", true)
 end
 
 local function addTypescriptDiagnosticsToQuickfix()
 	local jobs1 = getAllEslintErrors()
-  local jobs2 =	getAllTypeCheckErrors()
-  vim.fn.jobwait(jobs1, -1)
-  vim.fn.jobwait(jobs2, -1)
+	local jobs2 = getAllTypeCheckErrors()
+	vim.fn.jobwait(jobs1, -1)
+	vim.fn.jobwait(jobs2, -1)
 	vim.api.nvim_exec("copen", true)
 end
 

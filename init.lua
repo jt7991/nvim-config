@@ -1,6 +1,6 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
-vim.g.tabstop = 2
+vim.opt.tabstop = 2
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -35,8 +35,19 @@ require("lazy").setup({
   "sbdchd/neoformat",
   "mbbill/undotree",
   -- Useful plugin to show you pending keybinds.
-  { "folke/which-key.nvim", opts = {} },
-  { "folke/neodev.nvim",    opts = {} },
+  { "folke/which-key.nvim",  opts = {} },
+  {
+    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+    -- used for completion, annotations and signatures of Neovim apis
+    'folke/lazydev.nvim',
+    ft = 'lua',
+    opts = {
+      library = {
+        -- Load luvit types when the `vim.uv` word is found
+        { path = 'luvit-meta/library', words = { 'vim%.uv' } },
+      },
+    },
+  },
   {
     -- Add indentation guides even on blank lines
     "lukas-reineke/indent-blankline.nvim",
@@ -134,6 +145,12 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 
 vim.keymap.set("n", "U", "<cmd>UndotreeToggle<CR>")
 
+vim.keymap.set("n", "<leader>s", [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = 'Search And Replace The Word Under The Cursor' })
+
+vim.keymap.set("v", "<leader>s", [["ny:%s/\<<C-r>n\>/<C-r>n/gI<Left><Left><Left>]],
+  { desc = 'Search And Replace The selected text' })
+
 vim.api.nvim_create_user_command("QfLint", require("quickLint").addLintOutputToQf, {})
 vim.api.nvim_create_user_command("QfTypes", require("quickLint").addTypeCheckOutputToQuickfixList, {})
 vim.api.nvim_create_user_command("QfComments", require("qfComments").add_pr_comments_to_qf, {})
@@ -141,6 +158,8 @@ vim.api.nvim_create_user_command("QfAll", require("quickLint").addTypescriptDiag
 vim.api.nvim_create_user_command("TsToZod", require("tsToZod").convert_selected_to_zod, { range = true })
 
 vim.api.nvim_create_user_command("PrCreate", ":!gh pr create --web", {})
+
+require('keymapsPerFileType').setup()
 vim.api.nvim_create_user_command("Env", function(opts)
   if opts.args == "prod" then
     print(vim.fn.system("lerna run switch-env:prod"))

@@ -13,6 +13,41 @@ return {
       window = {
         width = 0.4,
       },
+      mappings = {
+        complete = {
+          detail = 'Use @<Tab> or /<Tab> for options.',
+          insert = '<C-l>',
+        },
+        close = {
+          normal = 'q',
+          insert = '<C-c>'
+        },
+        reset = {
+          normal = '<leader>r',
+          insert = '<C-x>'
+        },
+        submit_prompt = {
+          normal = '<CR>',
+          insert = '<C-s>'
+        },
+        accept_diff = {
+          normal = '<C-y>',
+          insert = '<C-y>'
+        },
+        yank_diff = {
+          normal = 'gy',
+          register = '"',
+        },
+        show_diff = {
+          normal = 'gd'
+        },
+        show_system_prompt = {
+          normal = 'gp'
+        },
+        show_user_selection = {
+          normal = 'gs'
+        },
+      },
       selection = function(source)
         local select = require("CopilotChat.select")
         return select.visual(source) or select.buffer(source)
