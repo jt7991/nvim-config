@@ -12,16 +12,17 @@ local servers = {
     filetypes = { "go", "gomod" },
   },
   html = {
-    filetypes = { "html", "templ" },
+    filetypes = { "html", "templ", 'eta' },
   },
   htmx = {
-    filetypes = { "html", "templ" },
+    filetypes = { "html", "templ", "eta" },
   },
   tailwindcss = {
     filetypes = {
       "html",
       "htmx",
       "css",
+      "eta",
       "scss",
       "javascript",
       "typescript",
@@ -40,7 +41,7 @@ local servers = {
   pyright = {},
   rust_analyzer = {},
   tsserver = {
-    commands = {},
+    single_file_support = false,
   },
   -- html = { filetypes = { 'html', 'twig', 'hbs'} },
 
@@ -55,6 +56,8 @@ local servers = {
       telemetry = { enable = false },
     },
   },
+  denols = {
+  }
 }
 
 -- [[ Configure LSP ]]
@@ -95,7 +98,6 @@ local on_attach = function(_, bufnr)
 end
 
 return {
-  -- LSP Configuration & Plugins
   "neovim/nvim-lspconfig",
   dependencies = {
     -- Automatically install LSPs to stdpath for neovim
@@ -104,7 +106,7 @@ return {
 
     -- Useful status updates for LSP
     -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-    { "j-hui/fidget.nvim", tag = "legacy", opts = {} },
+    { "j-hui/fidget.nvim",       tag = "legacy", opts = {} },
 
     -- Additional lua configuration, makes nvim stuff amazing!
     "folke/neodev.nvim",
@@ -119,13 +121,21 @@ return {
 
     mason_lspconfig.setup_handlers({
       function(server_name)
-        require("lspconfig")[server_name].setup({
+        local config = {
           capabilities = capabilities,
           on_attach = on_attach,
           settings = servers[server_name],
           filetypes = (servers[server_name] or {}).filetypes,
           commands = (servers[server_name] or {}).commands,
-        })
+          single_file_support = (servers[server_name] or {}).single_file_support
+        }
+        if server_name == "tsserver" then
+          config.root_dir = function(fname)
+            local util = require('lspconfig').util
+            return util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git')(fname)
+          end
+        end
+        require("lspconfig")[server_name].setup(config)
       end,
     })
     vim.keymap.set("n", "K", "<cmd>lua vim.lsp.buf.hover()<CR>")
