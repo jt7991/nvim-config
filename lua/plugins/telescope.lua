@@ -77,13 +77,6 @@ return {
       { desc = "[F]ind [S]ymbols" }
     )
 
-    vim.api.nvim_set_keymap(
-      "n",
-      "<space>fb",
-      ":Telescope file_browser path=%:p:h select_buffer=true<CR>",
-      { noremap = true }
-    )
-
     vim.keymap.set("n", "<leader>gb", require("telescope.builtin").git_branches, { desc = "[G]it [B]ranches" })
     vim.keymap.set("n", "<leader>gs", require("telescope.builtin").git_status, { desc = "[G]it [S]tatus" })
   end,

@@ -135,6 +135,13 @@ return {
             return util.root_pattern('tsconfig.json', 'jsconfig.json', 'package.json', '.git')(fname)
           end
         end
+
+        if server_name == "denols" then
+          config.root_dir = function(fname)
+            local util = require('lspconfig').util
+            return util.root_pattern('deno.json', 'deno.jsonc')(fname)
+          end
+        end
         require("lspconfig")[server_name].setup(config)
       end,
     })
