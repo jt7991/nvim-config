@@ -67,7 +67,7 @@ return {
 			}))
 		end, { desc = "[/] Fuzzily search in current buffer" })
 		vim.keymap.set("n", "<leader>ff", function()
-			require("telescope.builtin").find_files({ hidden = true })
+			require("telescope.builtin").find_files({ hidden = true, respect_gitignore = true })
 		end, { desc = "[F]ind [F]iles" })
 		vim.keymap.set("n", "<leader>fh", require("telescope.builtin").help_tags, { desc = "[F]ind [H]elp" })
 		vim.keymap.set(

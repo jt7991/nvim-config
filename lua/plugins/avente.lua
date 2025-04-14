@@ -13,6 +13,10 @@ return {
 			temperature = 0,
 			max_tokens = 4096,
 		},
+		ollama = {
+			endpoint = "http://192.168.68.77:11535",
+			model = "qwen2.5-coder:7b",
+		},
 	},
 	-- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
 	build = "make",

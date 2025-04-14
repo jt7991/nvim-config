@@ -3,6 +3,7 @@ vim.g.maplocalleader = " "
 vim.opt.tabstop = 2
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+vim.opt.swapfile = false
 
 vim.opt.spelllang = "en_us"
 vim.opt.spell = true
