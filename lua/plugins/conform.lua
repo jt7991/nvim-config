@@ -16,6 +16,7 @@ return { -- Autoformat
 			typescriptreact = { "prettier" },
 			svelte = { "prettier" },
 			json = { "prettier" },
+			blade = { "blade-formatter" },
 			-- Conform can also run multiple formatters sequentially
 			-- python = { "isort", "black" },
 			--

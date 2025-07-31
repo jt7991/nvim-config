@@ -194,5 +194,12 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		vim.bo.filetype = "json"
 	end,
 })
+
+-- Safely delete default gr keymaps to avoid errors if they don't exist in a mode
+for _, key in ipairs({ "gra", "grr", "gri", "grn" }) do
+	pcall(vim.keymap.del, "n", key)
+	pcall(vim.keymap.del, "x", key)
+end
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
