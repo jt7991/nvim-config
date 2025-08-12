@@ -40,7 +40,7 @@ local servers = {
 
 	pyright = {},
 	rust_analyzer = {},
-	tsserver = {
+	ts_ls = {
 		single_file_support = false,
 	},
 	svelte = { "svelte" },
@@ -130,7 +130,7 @@ return {
 					commands = (servers[server_name] or {}).commands,
 					single_file_support = (servers[server_name] or {}).single_file_support,
 				}
-				if server_name == "tsserver" then
+				if server_name == "ts_ls" then
 					config.root_dir = function(fname)
 						local util = require("lspconfig").util
 						return util.root_pattern("tsconfig.json", "jsconfig.json", "package.json", ".git")(fname)
