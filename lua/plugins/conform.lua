@@ -15,6 +15,7 @@ return { -- Autoformat
 			javascript = { "biome-check", "prettier", stop_after_first = true },
 			typescriptreact = { "biome-check", "prettier", stop_after_first = true },
 			svelte = { "prettier" },
+			astro = { "prettier" },
 			json = { "biome" },
 			blade = { "blade-formatter" },
 			-- Conform can also run multiple formatters sequentially
