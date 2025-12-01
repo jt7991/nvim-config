@@ -12,54 +12,54 @@ vim.opt.spell = true
 --    `:help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-	vim.fn.system({
-		"git",
-		"clone",
-		"--filter=blob:none",
-		"https://github.com/folke/lazy.nvim.git",
-		"--branch=stable", -- latest stable release
-		lazypath,
-	})
+  vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git",
+    "--branch=stable", -- latest stable release
+    lazypath,
+  })
 end
 
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-	"tpope/vim-fugitive",
-	"tpope/vim-rhubarb",
-	"tpope/vim-abolish",
-	"tpope/vim-surround",
-	"tpope/vim-repeat",
-	-- Detect tabstop and shiftwidth automatically
-	"tpope/vim-sleuth",
-	-- "github/copilot.vim",
-	"mbbill/undotree",
-	"smithbm2316/centerpad.nvim",
-	-- Useful plugin to show you pending keybinds.
-	{ "folke/which-key.nvim", opts = {} },
-	{
-		-- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
-		-- used for completion, annotations and signatures of Neovim apis
-		"folke/lazydev.nvim",
-		ft = "lua",
-		opts = {
-			library = {
-				-- Load luvit types when the `vim.uv` word is found
-				{ path = "luvit-meta/library", words = { "vim%.uv" } },
-			},
-		},
-	},
-	{
-		-- Add indentation guides even on blank lines
-		"lukas-reineke/indent-blankline.nvim",
-		main = "ibl",
-	},
+  "tpope/vim-fugitive",
+  "tpope/vim-rhubarb",
+  "tpope/vim-abolish",
+  "tpope/vim-surround",
+  "tpope/vim-repeat",
+  -- Detect tabstop and shiftwidth automatically
+  "tpope/vim-sleuth",
+  -- "github/copilot.vim",
+  "mbbill/undotree",
+  "smithbm2316/centerpad.nvim",
+  -- Useful plugin to show you pending keybinds.
+  { "folke/which-key.nvim", opts = {} },
+  {
+    -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
+    -- used for completion, annotations and signatures of Neovim apis
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        -- Load luvit types when the `vim.uv` word is found
+        { path = "luvit-meta/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+  {
+    -- Add indentation guides even on blank lines
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+  },
 
-	{ "numToStr/Comment.nvim", opts = {} },
+  { "numToStr/Comment.nvim", opts = {} },
 
-	{ import = "plugins" },
+  { import = "plugins" },
 
-	{},
+  {},
 })
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -119,11 +119,11 @@ vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 -- See `:help vim.highlight.on_yank()`
 local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-	group = highlight_group,
-	pattern = "*",
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+  group = highlight_group,
+  pattern = "*",
 })
 
 -- Diagnostic keymaps
@@ -147,24 +147,24 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz")
 vim.keymap.set("n", "U", "<cmd>UndotreeToggle<CR>")
 
 vim.keymap.set(
-	"n",
-	"<leader>s",
-	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
-	{ desc = "Search And Replace The Word Under The Cursor" }
+  "n",
+  "<leader>s",
+  [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+  { desc = "Search And Replace The Word Under The Cursor" }
 )
 
 vim.keymap.set(
-	"v",
-	"<leader>s",
-	[["ny:%s/\<<C-r>n\>/<C-r>n/gI<Left><Left><Left>]],
-	{ desc = "Search And Replace The selected text" }
+  "v",
+  "<leader>s",
+  [["ny:%s/\<<C-r>n\>/<C-r>n/gI<Left><Left><Left>]],
+  { desc = "Search And Replace The selected text" }
 )
 
 vim.api.nvim_set_keymap(
-	"n",
-	"<leader>z",
-	"<cmd>lua require'centerpad'.toggle{ leftpad = 100, rightpad = 100 }<cr>",
-	{ silent = true, noremap = true, desc = "Centerpad" }
+  "n",
+  "<leader>z",
+  "<cmd>lua require'centerpad'.toggle{ leftpad = 100, rightpad = 100 }<cr>",
+  { silent = true, noremap = true, desc = "Centerpad" }
 )
 vim.keymap.set("n", "<M-j>", "<cmd>cn<CR>", { desc = "Quickfix move down", noremap = true })
 vim.keymap.set("n", "<M-k>", "<cmd>cp<CR>", { desc = "Quickfix move up", noremap = true })
@@ -179,26 +179,33 @@ require("interactiveFixConsole")
 vim.api.nvim_create_user_command("PrCreate", ":!gh pr create --web", {})
 
 require("keymapsPerFileType").setup()
+require("biome").setup()
+-- vim.keymap.set(
+--   "n",
+--   "<leader>lg",
+--   require("launchLazyGit").open_lazygit_in_kitty,
+--   { desc = "Launch lazy git", noremap = true }
+-- )
 
 vim.filetype.add({
-	extension = {
-		templ = "templ",
-	},
+  extension = {
+    templ = "templ",
+  },
 })
 
 vim.g.neoformat_basic_format_retab = 1
 
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	pattern = "*.code-snippets",
-	callback = function()
-		vim.bo.filetype = "json"
-	end,
+  pattern = "*.code-snippets",
+  callback = function()
+    vim.bo.filetype = "json"
+  end,
 })
 
 -- Safely delete default gr keymaps to avoid errors if they don't exist in a mode
 for _, key in ipairs({ "gra", "grr", "gri", "grn" }) do
-	pcall(vim.keymap.del, "n", key)
-	pcall(vim.keymap.del, "x", key)
+  pcall(vim.keymap.del, "n", key)
+  pcall(vim.keymap.del, "x", key)
 end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
